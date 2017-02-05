@@ -53,7 +53,10 @@ model = Sequential()
 model.add(Dense(100, input_dim = len(X_train[0])))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
-model.add(Dense(20))
+model.add(Dense(50))
+model.add(Activation('relu'))
+model.add(Dropout(0.1))
+model.add(Dense(50))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
 model.add(Dense(2))
@@ -64,7 +67,7 @@ model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
-fit = model.fit(X_train, y_train, batch_size=100, nb_epoch=50, verbose=1)
+fit = model.fit(X_train, y_train, batch_size=256, nb_epoch=100, verbose=1)
 
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test score:', score[0])
@@ -73,17 +76,5 @@ print('Test accuracy:', score[1])
 X = getData(dtype="test")
 y = model.predict_on_batch(X)
 y += 1
-y = [a.index(max(a)) + 1 for a in y]
+y = [np.argmax(a) + 1 for a in y]
 putData(y)
-
-
-# clf = RandomForestClassifier()
-# scores = cross_val_score(clf, X, y, cv=5, verbose=1)
-# print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-# clf.fit(X, y)
-#
-# print(clf.score(X, y))
-#
-# X = getData(dtype="test")
-# y = clf.predict(X)
-# putData(y)
