@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
-from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout
 from keras.utils import np_utils
@@ -16,7 +15,7 @@ def getData(dtype="train"):
     if dtype == "test":
         filename = "test_2008.csv"
     outputLabel = "PES1"
-    inputLabels = ["HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEAGE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1"]
+    inputLabels = ["HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEAGE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1", "PEIO1COW", "PRDTOCC1", "PRMJIND1", "PRMJOCC1", "PRMJOCGR", "PRNAGPWS", "PEERNUOT", "PUERNH1C", "PEERNLAB", "PENLFJH", "PENLFACT"]
     headers = {}
     with open(filename, "rb") as f:
         reader = csv.reader(f, delimiter=",")
@@ -35,7 +34,7 @@ def getData(dtype="train"):
         return X
 
 def putData(y):
-    with open('output.csv', 'w') as f:
+    with open('output_neural.csv', 'w') as f:
         f.write('id,PES1\n')
         for i, val in enumerate(y):
             f.write(str(i) + "," + str(val) + "\n")
@@ -50,13 +49,16 @@ y_test = np_utils.to_categorical(y_test, nb_classes=2)
 
 model = Sequential()
 
-model.add(Dense(100, input_dim = len(X_train[0])))
+model.add(Dense(120, input_dim = len(X_train[0])))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
-model.add(Dense(50))
+model.add(Dense(60))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
-model.add(Dense(50))
+model.add(Dense(40))
+model.add(Activation('relu'))
+model.add(Dropout(0.1))
+model.add(Dense(40))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
 model.add(Dense(2))
@@ -67,7 +69,7 @@ model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
-fit = model.fit(X_train, y_train, batch_size=256, nb_epoch=100, verbose=1)
+fit = model.fit(X_train, y_train, batch_size=256, nb_epoch=2000, verbose=1)
 
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test score:', score[0])

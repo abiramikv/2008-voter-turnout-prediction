@@ -1,24 +1,19 @@
 import csv
 import keras
 import numpy as np
-from sklearn.model_selection import train_test_split
-import tensorflow as tf
-
-from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Dropout
-from keras.utils import np_utils
+from sklearn.model_selection import cross_val_score
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 def getData(dtype="train"):
     filename = "train_2008.csv"
     if dtype == "test":
         filename = "test_2008.csv"
     outputLabel = "PES1"
-    inputLabels = ["HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEAGE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1"]
+    inputLabels = ["HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEAGE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1", "PEIO1COW", "PRDTOCC1", "PRMJIND1", "PRMJOCC1", "PRMJOCGR", "PRNAGPWS", "PEERNUOT", "PUERNH1C", "PEERNLAB", "PENLFJH", "PENLFACT"]
     headers = {}
-    with open(filename, "rb") as f:
+    with open(filename, "r") as f:
         reader = csv.reader(f, delimiter=",")
         for i, line in enumerate(reader):
             if i == 0:
@@ -35,55 +30,19 @@ def getData(dtype="train"):
         return X
 
 def putData(y):
-    with open('output.csv', 'w') as f:
+    with open('output_sklearn.csv', 'w') as f:
         f.write('id,PES1\n')
         for i, val in enumerate(y):
             f.write(str(i) + "," + str(val) + "\n")
 
 X, y = getData(dtype="train")
-y -= 1
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
-
-y_train = np_utils.to_categorical(y_train, nb_classes=2)
-y_test = np_utils.to_categorical(y_test, nb_classes=2)
-
-model = Sequential()
-
-model.add(Dense(100, input_dim = len(X_train[0])))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(20))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(2))
-model.add(Activation('softmax'))
-
-
-model.summary()
-
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-
-fit = model.fit(X_train, y_train, batch_size=100, nb_epoch=50, verbose=1)
-
-score = model.evaluate(X_test, y_test, verbose=0)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
+clf = RandomForestClassifier(n_estimators=20000, verbose=1)
+#clf = AdaBoostClassifier(n_estimators=1000)
+scores = cross_val_score(clf, X, y, cv=5, verbose=1)
+print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+clf.fit(X, y)
 
 X = getData(dtype="test")
-y = model.predict_on_batch(X)
-y += 1
-y = [a.index(max(a)) + 1 for a in y]
+y = clf.predict(X)
 putData(y)
-
-
-# clf = RandomForestClassifier()
-# scores = cross_val_score(clf, X, y, cv=5, verbose=1)
-# print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-# clf.fit(X, y)
-#
-# print(clf.score(X, y))
-#
-# X = getData(dtype="test")
-# y = clf.predict(X)
-# putData(y)
