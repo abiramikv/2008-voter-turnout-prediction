@@ -1,0 +1,91 @@
+import csv
+import numpy as np
+from sklearn.model_selection import cross_val_score
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+
+def getData(dtype="train"):
+    filename = "train_2008.csv"
+    if dtype == "test":
+        filename = "test_2008.csv"
+    outputLabel = "PES1"
+    # Analtyical
+    # inputLabels = ["PUABSOT", "HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEPARENT", "PEAGE", "PESPOUSE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PUWK", "PENATVTY", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1", "PEIO1COW", "PRDTOCC1", "PRMJIND1", "PRMJOCC1", "PRMJOCGR", "PRNAGPWS", "PEERNUOT", "PUERNH1C", "PEERNLAB", "PENLFJH", "PENLFACT"]
+    # Ratio Diff Over 0.1
+    #inputLabels = ["PXLAYAVL", "PXRACE1", "PELAYLK", "PTDTRACE", "PXIO2ICD", "PRDISC", "PELKFTO", "PXMNTVTY", "PEDISOUT", "HUBUSL2", "PEMOMTYP", "PELKLL1O", "PEDWLKO", "PREMPHRS", "PEIO1ICD", "PXMS123", "PRINUSYR", "PEDADTYP", "PEDWLKWK", "PTWK", "PRJOBSEA", "PXNLFACT", "PECOHAB", "PXDWWNTO", "PXDWWK", "PRMARSTA", "PEDWWK", "PUJHCK4", "PUJHCK5", "PXJHWKO", "PUJHCK1", "PUJHCK2", "PELKLL2O", "PXDWRSN", "PEIO2OCD", "PEJHWANT", "PEJHWKO", "PRDTIND2", "PRDTIND1", "PUDIS", "PEAGE", "PRCOWPG", "PEDISREM", "PRUNEDUR", "PUDWCK5", "PUDWCK4", "PUDWCK2", "PUDWCK1", "PRABSREA", "PESPOUSE", "GTCO", "PXERNPER", "PXERNH1O", "PEHRAVL", "PEDW4WK", "PULAY", "PULINENO", "PELKAVL", "PXLKLL2O", "PENLFJH", "PUBUSCK3", "PXLKFTO", "PELNDAD", "PXDISOUT", "PEIO2ICD", "PEMJNUM", "PRCITFLG", "PEMNTVTY", "PRFAMNUM", "PXIO2OCD", "HUPRSCNT", "PUWK", "PRIMIND1", "HETELAVL", "PEMLR", "PRIMIND2", "PEHRWANT", "PXDWLKO", "PRDTOCC1", "PRDTOCC2", "PEGR6COR", "PXIO1COW", "PUHRCK7", "PEHRUSL2", "PEHRUSL1", "PERET1", "PULK", "PESCHLVL", "PXSCHLVL", "PRMJOCC1", "PRMJOCC2", "PEIO1COW", "GESTFIPS", "GESTCEN", "PXRRP", "PXFNTVTY", "PEHRUSLT", "PEDIPGED", "PXHRAVL", "PRUNTYPE", "PRMJIND2", "PRMJIND1", "PRCOW1", "PXCOHAB", "PEDWWNTO", "PXLKAVL", "PXLKLL1O", "PXDISPHY", "GTCBSA", "PENATVTY", "PXLAYLK", "PEHGCOMP", "PEDWAVL", "HUFAMINC", "PERRP", "PEDWAVR", "PEDWRSN", "PXLKM1", "PEHSPNON", "HRHHID2", "PULKAVR", "PXDWAVL", "HETELHHD", "PEABSRSN", "PXDW4WK", "PRMJOCGR", "PEHRRSN1", "PEHRRSN2", "PXDWAVR", "PXLKLWO", "PEMARITL", "PELKDUR", "PUNLFCK1", "PXPARENT", "PEIO2COW", "PXLKDUR", "PUHROT2", "PEDISEYE", "PXMARITL", "PULAY6M", "PULAYCK1", "PULAYCK3", "PULAYCK2", "PXDISDRS", "PEJHRSN", "PRDTCOW1", "PRDTCOW2", "PXDWLKWK", "PRPTREA", "PRNMCHLD", "PXLNDAD", "HURESPLI", "PEPARENT", "PXGRPROF", "PXEDUCA", "PXCYC", "PURETOT", "PXDIPGED", "PUHROFF2", "PEDISDRS", "PXIO1ICD", "PUABSOT", "PRFAMREL", "PXINUSYR", "PXHRUSL1", "PXLAYDUR", "PREXPLF", "PUDIS2", "PUDIS1", "PEAFWHN4", "PEAFWHN3", "PEAFWHN2", "PEAFWHN1", "PEEDUCA", "PENLFACT", "PULKM6", "PULKM5", "PULKM4", "PULKM3", "PULKM2", "PUCHINHH", "PRCOW2", "PEFNTVTY", "PXSCHENR", "PRCITSHP", "PULAYDT", "PEERNPER", "PRPTHRS", "PXGR6COR", "HEHOUSUT", "OCCURNUM", "PXDISEAR", "PXLAYFTO", "PEERNRT", "PEERNHRY", "PELKLWO", "PEERNCOV", "PEMS123", "HUSPNISH", "PELKM1", "PELAYDUR", "HRHTYPE", "PRWNTJOB", "PEHRACT1", "PXHGCOMP", "PXERNWKP", "HXHOUSUT", "PELNMOM", "PXMOMTYP", "PELAYFTO", "PXSCHFT", "PEHRACTT", "PXERNRT", "PRFAMTYP", "HRNUMHOU", "PEERNWKP", "PXDISEYE", "PXDISREM", "HETENURE", "PEHRRSN3", "GTCSA", "PREMPNOT", "PEGRPROF", "PRDTHSP", "PESCHENR", "PUIO1MFG", "PEHRACT2", "PXLNMOM", "PRNLFSCH", "PXRET1", "PXDADTYP", "PELAYAVL", "PXHRRSN1", "PXHRRSN2", "PRWKSTAT", "PRWKSCH", "PXMJOT", "PXHSPNON", "PXSEX", "PXJHWANT"]
+    # Ratio Diff Between 0.05 and 0.2
+    #inputLabels = ["PXLAYAVL", "PXRACE1", "PELAYLK", "PTDTRACE", "PXIO2ICD", "PRDISC", "PELKFTO", "HUBUSL2", "HUBUSL1", "PEMOMTYP", "PXIO1OCD", "PELKLL1O", "PEDWLKO", "PREMPHRS", "PXMS123", "HEPHONEO", "PEMJOT", "PTWK", "PRJOBSEA", "PXNLFACT", "PECOHAB", "PXDWWNTO", "PXDWWK", "PRMARSTA", "PEDWWK", "PUJHCK4", "PXJHWKO", "PUJHCK1", "PUJHCK2", "PUJHCK3", "PELKLL2O", "PXDWRSN", "PEDISPHY", "PEJHWANT", "PEJHWKO", "PRDTIND1", "PRCOWPG", "PRUNEDUR", "PUDWCK5", "PUDWCK4", "PUDWCK1", "PRABSREA", "PESPOUSE", "GTCO", "PXERNPER", "PXERNH1O", "PEHRAVL", "PULAY", "PRHRUSL", "PELKAVL", "PXLKLL2O", "PUBUSCK4", "PUBUSCK3", "PUBUSCK2", "PXLKFTO", "PELNDAD", "PXDISOUT", "PXERNH2", "PEMJNUM", "PRFAMNUM", "PXIO2OCD", "HUPRSCNT", "PRDISFLG", "PRIMIND1", "HETELAVL", "HUINTTYP", "PXAFWHN1", "PXHRWANT", "PXMJNUM", "PEHRWANT", "PXDWLKO", "PRDTOCC1", "PEGR6COR", "PXIO1COW", "PUHRCK5", "PUHRCK7", "PUHRCK1", "PUHRCK2", "PUHRCK3", "PEHRUSL2", "PEHRUSL1", "PERET1", "PULK", "PRMJOCC1", "PRMJOCC2", "HUBUS", "PEIO1COW", "GESTFIPS", "GESTCEN", "PXSPOUSE", "PXFNTVTY", "PEHRUSLT", "PXHRAVL", "PRUNTYPE", "PRMJIND2", "PRMJIND1", "PRCOW1", "PXJHRSN", "PXCOHAB", "PEDWWNTO", "PXLKAVL", "PXLKLL1O", "PEERNLAB", "PXDISPHY", "GTCBSA", "PXLAYLK", "PEDWAVL", "PXERNCOV", "PEDWRSN", "PXLKM1", "PEHSPNON", "PXDWAVL", "HETELHHD", "PXDW4WK", "PRMJOCGR", "PEHRRSN1", "PEHRRSN2", "PXERN", "PXLKLWO", "PEMARITL", "PXHRACT2", "PUNLFCK1", "PXPARENT", "PEIO2COW", "PXLKDUR", "PUBUS1", "PUHROT2", "PEERNHRO", "PEDISEYE", "PXABSPDO", "PULAY6M", "PULAYCK1", "PULAYCK2", "PXDISDRS", "PRDTCOW1", "PRDTCOW2", "PXDWLKWK", "PRPTREA", "PRNMCHLD", "PXLNDAD", "PEPARENT", "PXGRPROF", "PURETOT", "PXDIPGED", "PUHROFF2", "PUHROFF1", "PENLFRET", "PEDISDRS", "PXIO1ICD", "PUABSOT", "PRFAMREL", "PXHRUSL2", "PUIOCK1", "PXLAYDUR", "PXHRUSLT", "PREXPLF", "PUDIS1", "PEAFWHN2", "PEAFWHN1", "PULKM3", "PULKM2", "PUCHINHH", "PESCHFT", "PRCOW2", "PXSCHENR", "PRCITSHP", "GTINDVPC", "PULAYDT", "PEERNPER", "PRPTHRS", "PXGR6COR", "PXDISEAR", "PXLAYFTO", "PEERNRT", "PUIO2MFG", "PEERNHRY", "PELKLWO", "PEERNCOV", "PEMS123", "PXHRFTPT", "HXTELAVL", "PXERNUOT", "PELKM1", "HRHTYPE", "PRWNTJOB", "PEHRACT1", "PXHGCOMP", "PXERNWKP", "PELNMOM", "PXMOMTYP", "PELAYFTO", "PEHRACTT", "PXERNRT", "PEERNWKP", "PECYC", "PXERNHRY", "PXDISEYE", "PXDISREM", "HETENURE", "PEHRRSN3", "GTCSA", "PXERNHRO", "PREMPNOT", "PEGRPROF", "PUIO1MFG", "PEHRACT2", "PXLNMOM", "PRNLFSCH", "PXRET1", "PXDADTYP", "PELAYAVL", "PRCHLD", "PXHRRSN1", "PXHRRSN3", "PXHRRSN2", "PRWKSTAT", "PRWKSCH", "PXMJOT", "PUBUS2OT", "PRSJMJ", "PEAFEVER", "PXAFNOW", "PXJHWANT"]
+    # Ratio Diff Over 0.2
+    #inputLabels = ["PEDISOUT", "PEIO1ICD", "PRINUSYR", "PEDADTYP", "PEDWLKWK", "PUDIS", "PEAGE", "PEDISREM", "PEDW4WK", "PULINENO", "PENLFJH", "PRCITFLG", "PEMNTVTY", "PUWK", "PEMLR", "PESCHLVL", "PXSCHLVL", "PXRRP", "PEDIPGED", "PENATVTY", "PEHGCOMP", "HUFAMINC", "PERRP", "HRHHID2", "PELKDUR", "HURESPLI", "PXEDUCA", "PXINUSYR", "PEEDUCA", "PENLFACT", "PEFNTVTY", "HEHOUSUT", "OCCURNUM", "HUSPNISH", "PXSCHFT", "PRFAMTYP", "HRNUMHOU", "PRDTHSP", "PESCHENR"]
+    # Ratio Diff Over 0.15, n > 500
+    #inputLabels = ["PTDTRACE", "PEDISOUT", "PEDWLKO", "PEIO1ICD", "PXMS123", "PECOHAB", "PXDWWK", "PRDTIND1", "PUDIS", "PEAGE", "PEDISREM", "PULINENO", "PXLKLL2O", "PEMNTVTY", "PRFAMNUM", "PUWK", "PEMLR", "PRDTOCC1", "PEGR6COR", "PXSCHLVL", "PRMJOCC1", "PXRRP", "PEDIPGED", "PXCOHAB", "GTCBSA", "PENATVTY", "PEHGCOMP", "HUFAMINC", "PERRP", "HRHHID2", "HETELHHD", "PEHRRSN2", "PRPTREA", "PEDISDRS", "PRFAMREL", "PUDIS1", "PEEDUCA", "PUCHINHH", "PEFNTVTY", "PXSCHENR", "PXGR6COR", "HEHOUSUT", "OCCURNUM", "PEMS123", "PELKM1", "HRHTYPE", "PXHGCOMP", "PXSCHFT", "PRFAMTYP", "PEGRPROF", "PRDTHSP", "PESCHENR", "PRNLFSCH"]
+    # Ratio Diff Over 0.12, n > 1000
+    inputLabels = ["PXRACE1", "PTDTRACE", "PELKFTO", "PEDISOUT", "PEMOMTYP", "PELKLL1O", "PEIO1ICD", "PXMS123", "PECOHAB", "PRMARSTA", "PRDTIND1", "PUDIS", "PEAGE", "PRCOWPG", "PEDISREM", "PUDWCK4", "PEHRAVL", "PULAY", "PULINENO", "PELKAVL", "PXLKLL2O", "PUBUSCK3", "PXLKFTO", "PELNDAD", "PEMNTVTY", "PRFAMNUM", "PUWK", "PRIMIND1", "HETELAVL", "PEMLR", "PXDWLKO", "PRDTOCC1", "PEGR6COR", "PULK", "PXSCHLVL", "PRMJOCC1", "PEIO1COW", "PEDIPGED", "PXHRAVL", "PRMJIND1", "PRCOW1", "PXCOHAB", "PEDWWNTO", "PXLKAVL", "PXLKLL1O", "HUFAMINC", "PERRP", "PXLKM1", "PEHSPNON", "HRHHID2", "HETELHHD", "PRMJOCGR", "PXLKLWO", "PEMARITL", "PUNLFCK1", "PXPARENT", "PXLKDUR", "PRDTCOW1", "PXLNDAD", "PEPARENT", "PXGRPROF", "PEDISDRS", "PRFAMREL", "PREXPLF", "PUDIS1", "PEEDUCA", "PUCHINHH", "PEFNTVTY", "PXSCHENR", "PXGR6COR", "HEHOUSUT", "OCCURNUM", "PELKLWO", "PEMS123", "HRHTYPE", "PRWNTJOB", "PXHGCOMP", "PELNMOM", "PXMOMTYP", "PXSCHFT", "PRFAMTYP", "HETENURE", "PREMPNOT", "PEGRPROF", "PRDTHSP", "PESCHENR", "PXLNMOM", "PRNLFSCH", "PXRET1", "PXDADTYP", "PRWKSTAT", "PRWKSCH"]
+    headers = {}
+    with open(filename, "r") as f:
+        reader = csv.reader(f, delimiter=",")
+        for i, line in enumerate(reader):
+            if i == 0:
+                for j, s in enumerate(line):
+                    headers[s] = j
+            else:
+                break
+    data = np.loadtxt(filename, delimiter=",", skiprows=1, dtype=int)
+
+    #
+    # y = data[:, headers[outputLabel]] - 2
+    # ratio = float(np.count_nonzero(y)) / float(len(y))
+    # print(ratio)
+    #
+    # selected = []
+    # for h in headers:
+    #     if h == "PES1":
+    #         continue
+    #     col = data[:, headers[h]]
+    #     unique = np.unique(col)
+    #     if len(unique) > 100:
+    #         continue
+    #     m = 0
+    #     for u in unique:
+    #         count1 = 0
+    #         count2 = 0
+    #         for i, x in enumerate(col):
+    #             if x == u:
+    #                 count2 += 1
+    #                 if y[i] == -1:
+    #                     count1 += 1
+    #         if count2 > 1000:
+    #             prob = float(count1)/float(count2)
+    #             m = max(m, np.absolute(prob - ratio))
+    #     if m > 0.15:
+    #         selected.append(h)
+    #         print h, len(unique), m
+    # print '", "'.join(selected)
+
+
+
+    X = data[:, [headers[h] for h in inputLabels]]
+    if dtype == "train":
+        y = data[:, headers[outputLabel]]
+        return X, y
+    else:
+        return X
+
+def putData(y):
+    with open('output_sklearn.csv', 'w') as f:
+        f.write('id,PES1\n')
+        for i, val in enumerate(y):
+            f.write(str(i) + "," + str(val) + "\n")
+
+X, y = getData(dtype="train")
+
+clf = RandomForestClassifier(n_estimators=2000)
+#clf = AdaBoostClassifier(n_estimators=100)
+scores = cross_val_score(clf, X, y, cv=2, verbose=1)
+print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+clf.fit(X, y)
+
+X = getData(dtype="test")
+y = clf.predict(X)
+putData(y)
