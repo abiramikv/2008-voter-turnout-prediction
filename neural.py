@@ -15,7 +15,7 @@ def getData(dtype="train"):
     if dtype == "test":
         filename = "test_2008.csv"
     outputLabel = "PES1"
-    inputLabels = ["HUFINAL", "HUSPNISH", "HETENURE", "HETELHHD", "HUFAMINC", "HRNUMHOU", "HRHTYPE", "HUBUS", "GEREG", "GESTCEN", "GTCBSAST", "GTCBSASZ", "PEAGE", "PEMARITL", "PESEX", "PEAFEVER", "PEEDUCA", "PTDTRACE", "PEHSPNON", "PRPERTYP", "PRCITSHP", "PRINUSYR", "PEMJNUM", "PEHRUSL1", "PRDTIND1", "PEIO1COW", "PRDTOCC1", "PRMJIND1", "PRMJOCC1", "PRMJOCGR", "PRNAGPWS", "PEERNUOT", "PUERNH1C", "PEERNLAB", "PENLFJH", "PENLFACT"]
+    inputLabels = ["PEEDUCA", "PESCHLVL", "PEHGCOMP", "PRINUSYR", "PXEDUCA", "PRUNTYPE", "PELKLWO", "PESPOUSE", "PEDWRSN", "PEDWWNTO", "PULINENO", "OCCURNUM", "PUDWCK2", "PXDWWK", "PUABSOT", "PXRACE1", "PRFAMTYP", "HRHTYPE", "PXNLFACT", "HUBUSL1", "PXMJOT", "PXJHRSN", "PXNLFRET", "PENLFACT", "PXDWRSN", "PUWK", "HUBUSL2", "PXLKFTO", "PEDWAVR", "PXDWAVL", "PXABSPDO", "PXLKLL2O", "HRNUMHOU", "PXSCHENR", "PXHRACT1", "PULKPS1", "PELAYAVL", "PXHRUSLT", "PTDTRACE", "PULK", "PXDIPGED"]
     headers = {}
     with open(filename, "r") as f:
         reader = csv.reader(f, delimiter=",")
@@ -49,6 +49,7 @@ y_test = np_utils.to_categorical(y_test, nb_classes=2)
 
 model = Sequential()
 
+<<<<<<< HEAD
 model.add(Dense(120, input_dim = len(X_train[0])))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
@@ -61,15 +62,26 @@ model.add(Dropout(0.1))
 model.add(Dense(40))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
+=======
+model.add(Dense(50, input_dim = len(X_train[0])))
+model.add(Activation('sigmoid'))
+model.add(Dropout(0.4))
+model.add(Dense(50))
+model.add(Activation('sigmoid'))
+model.add(Dropout(0.4))
+model.add(Dense(50))
+model.add(Activation('sigmoid'))
+model.add(Dropout(0.4))
+>>>>>>> cb3d00447372b33eb96790b996510f704fe82319
 model.add(Dense(2))
 model.add(Activation('softmax'))
 
 
 model.summary()
 
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
 
-fit = model.fit(X_train, y_train, batch_size=256, nb_epoch=100, verbose=1)
+fit = model.fit(X_train, y_train, batch_size=200, nb_epoch=10000, verbose=1)
 
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test score:', score[0])
