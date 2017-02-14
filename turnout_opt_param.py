@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import cross_val_score
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.linear_model import Perceptron
 
 from sklearn.preprocessing import OneHotEncoder
 
@@ -85,7 +85,7 @@ for i in range(np.shape(X)[1]):
 X = X_t[:n, :]
 #clf = RandomForestClassifier(n_estimators=2000, verbose=1)
 #clf = AdaBoostClassifier(n_estimators=100)
-clf = LogisticRegression()
+clf = Perceptron(n_iter=50)
 scores = cross_val_score(clf, X, y, cv=4, verbose=1)
 print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 clf.fit(X, y)

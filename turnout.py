@@ -3,9 +3,11 @@ import numpy as np
 from sklearn.model_selection import cross_val_score
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
 
 from sklearn.preprocessing import OneHotEncoder
+
+from matplotlib import pyplot as pl
+
 
 # one-hot-encoding for categorical variables
 def categorize(x):
@@ -82,12 +84,29 @@ for i in range(np.shape(X)[1]):
     X_t = np.hstack((X_t, splitFeature(X[:, i], group)))
 
 X = X_t[:n, :]
-clf = RandomForestClassifier(n_estimators=2000, verbose=1)
-#clf = AdaBoostClassifier(n_estimators=100)
-scores = cross_val_score(clf, X, y, cv=4, verbose=1)
-print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
-clf.fit(X, y)
 
-X = X_t[n:, :]
-y = clf.predict(X)
-putData(y)
+means = []
+error = []
+domain = []
+for i in range(100, 3000, 100):
+    domain.append(i)
+
+    clf = RandomForestClassifier(n_estimators=i)
+    scores = cross_val_score(clf, X, y, cv=5, verbose=1)
+    print("N = %d, Accuracy: %0.4f (+/- %0.4f)" % (i, scores.mean(), scores.std() * 2))
+    means.append(scores.mean())
+    error.append(scores.std() * 2)
+
+    d = np.array(domain)
+    m = np.array(means)
+    e = np.array(error)
+
+    pl.title("95% Confidence Interval for Random Forest Classifier Accuracy")
+    #pl.ylim([0.6, 0.8])
+    pl.ylabel("Test Accuracy")
+    pl.xlim([99, i])
+    pl.xlabel("Number of Estimators")
+    pl.plot(d, m, 'b-')
+    pl.fill_between(d, m-e, m+e, alpha=0.8)
+    pl.savefig("scores-" + str(i) + ".png")
+    pl.clf()
