@@ -49,20 +49,6 @@ y_test = np_utils.to_categorical(y_test, nb_classes=2)
 
 model = Sequential()
 
-<<<<<<< HEAD
-model.add(Dense(120, input_dim = len(X_train[0])))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(60))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(40))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(40))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-=======
 model.add(Dense(50, input_dim = len(X_train[0])))
 model.add(Activation('sigmoid'))
 model.add(Dropout(0.4))
@@ -72,7 +58,6 @@ model.add(Dropout(0.4))
 model.add(Dense(50))
 model.add(Activation('sigmoid'))
 model.add(Dropout(0.4))
->>>>>>> cb3d00447372b33eb96790b996510f704fe82319
 model.add(Dense(2))
 model.add(Activation('softmax'))
 
